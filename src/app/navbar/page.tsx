@@ -33,7 +33,7 @@ const Navbar = () => {
   bg-gradient-to-r from-[#0a0f1a]/80 to-[#1e293b]/80
   backdrop-blur-lg border-b border-none shadow-md z-50"
     >
-      <div className="text-lg font-semibold text-white hidden sm:block">Dashboard</div>
+      <div className="text-lg font-semibold text-white hidden sm:block"></div>
       <div className="flex items-center gap-5 ml-auto">
         <button className="relative text-gray-300 hover:text-cyan-300 transition-colors duration-300 group">
           <Bell size={22} className="transition-transform duration-300 group-hover:scale-110" />
@@ -50,7 +50,7 @@ const Navbar = () => {
           >
             <span className="text-white text-sm font-medium hidden sm:block">Zohaib</span>
             <div
-              className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600
+              className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 border
               flex items-center justify-center text-white font-bold shadow-lg
               hover:shadow-[0_0_10px_rgba(6,182,212,0.6)] transition-all duration-300"
             >
