@@ -5,17 +5,30 @@ import { Loader2, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import axiosWrapper from "@/lib/axiosWrapper";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/userSlice";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e: React.FormEvent<HTMLElement>): Promise<void> => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const { data } = await axiosWrapper.post(`/login`, { email });
+
+      const userData = {
+        name: data.user?.name || email.split("@")[0].substring(0, 7),
+        email: data.user?.email || email,
+        memberSince: data.user?.memberSince || new Date().toLocaleString("default", { month: "long", year: "numeric" }),
+      };
+
+      dispatch(setUser(userData));
+      localStorage.setItem("user", JSON.stringify(userData));
       toast.success(data.message);
       router.push(`/verify?email=${email}`);
     } catch (error: any) {

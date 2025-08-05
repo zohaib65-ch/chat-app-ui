@@ -15,11 +15,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-col flex-1">
         <Navbar />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-[#0f172a] via-[#0b1120] to-[#0a0f1a]">
+          {children}
+        </main>
       </div>
     </div>
   );

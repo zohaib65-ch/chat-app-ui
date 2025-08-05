@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,10 +9,10 @@ import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import axiosWrapper from "@/lib/axiosWrapper";
 
+// Validation schema
 const schema = z.object({
   otp: z.string().min(6, "Enter the 6-digit OTP").max(6),
 });
-
 type FormData = z.infer<typeof schema>;
 
 const VerifyOtpPage = () => {
@@ -28,20 +28,25 @@ const VerifyOtpPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [timer, setTimer] = useState(60); // start from 60 seconds
+
+  // Timer countdown logic
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [timer]);
 
   const onSubmit = async (data: FormData) => {
-    if (!email) {
-      toast.error("Email is missing.");
-      return;
-    }
+    if (!email) return toast.error("Email is missing.");
 
     setLoading(true);
     try {
-      const res = await axiosWrapper.post("/verify", {
-        email,
-        otp: data.otp,
-      });
-
+      const res = await axiosWrapper.post("/verify", { email, otp: data.otp });
       toast.success(res.data.message || "OTP Verified");
       router.push("/dashboard");
     } catch (error: any) {
@@ -52,19 +57,15 @@ const VerifyOtpPage = () => {
   };
 
   const handleResendOtp = async () => {
-    if (!email) {
-      toast.error("Email is missing.");
-      return;
-    }
+    if (!email) return toast.error("Email is missing.");
 
     setResendLoading(true);
     try {
-      const res = await axiosWrapper.post("/login", {
-        email,
-      });
+      const res = await axiosWrapper.post("/login", { email });
       toast.success(res.data.message || "OTP resent successfully");
+      setTimer(60); // reset timer on resend
     } catch (error: any) {
-      toast.error("Failed to resend OTP");
+      toast.error(error.response?.data?.message || "Failed to resend OTP");
     } finally {
       setResendLoading(false);
     }
@@ -90,7 +91,12 @@ const VerifyOtpPage = () => {
             />
             {errors.otp && <p className="text-red-400 text-sm mt-1">{errors.otp.message}</p>}
           </div>
-
+          <div className="text-end mt-6 text-sm text-gray-400">
+            Didn’t receive a code?{" "}
+            <button disabled={resendLoading || timer > 0} onClick={handleResendOtp} className="text-blue-400 hover:underline disabled:opacity-50">
+              {resendLoading ? "Sending..." : timer > 0 ? `Resend in ${timer}s` : "Resend OTP"}
+            </button>
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -106,13 +112,6 @@ const VerifyOtpPage = () => {
             )}
           </button>
         </form>
-
-        <div className="text-center mt-6 text-sm text-gray-400">
-          Didn’t receive a code?{" "}
-          <button disabled={resendLoading} className="text-blue-400 hover:underline disabled:opacity-50" onClick={handleResendOtp}>
-            {resendLoading ? "Sending..." : "Resend OTP"}
-          </button>
-        </div>
       </div>
     </div>
   );
