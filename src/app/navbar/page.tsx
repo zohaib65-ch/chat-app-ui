@@ -4,13 +4,20 @@ import React, { useState, useRef, useEffect } from "react";
 import { Bell, User, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import LogoutModal from "../components/LogoutModal";
+import { useAppData } from "../context/AppContext";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { isAuth, user, loading } = useAppData();
 
+  useEffect(() => {
+    if (!loading && !isAuth) {
+      router.push("/login");
+    }
+  }, [isAuth, loading, router]);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -46,17 +53,18 @@ const Navbar = () => {
           <div
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-3 px-2 py-1 rounded-full
-            hover:bg-white/5 transition-all duration-300 cursor-pointer select-none"
+  hover:bg-white/5 transition-all duration-300 cursor-pointer select-none"
           >
-            <span className="text-white text-sm font-medium hidden sm:block">Zohaib</span>
+            <span className="text-white text-sm font-medium hidden sm:block">{user?.name || "Unknown User"}</span>
             <div
               className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 border
-              flex items-center justify-center text-white font-bold shadow-lg
-              hover:shadow-[0_0_10px_rgba(6,182,212,0.6)] transition-all duration-300"
+    flex items-center justify-center text-white font-bold shadow-lg
+    hover:shadow-[0_0_10px_rgba(6,182,212,0.6)] transition-all duration-300"
             >
-              Z
+              {user?.name ? user.name.charAt(0).toUpperCase() : "Z"}
             </div>
           </div>
+
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[#1e293b] border border-white/10 rounded-lg shadow-lg overflow-hidden z-1000">
               <button

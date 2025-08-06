@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Search, Send, Menu, X } from "lucide-react";
+import { useAppData } from "../context/AppContext";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const ChatApp = () => {
+  const { isAuth, loading } = useAppData();
+  const router = useRouter();
   const chatListData = [
     {
       id: 1,
@@ -30,6 +35,12 @@ const ChatApp = () => {
       ],
     },
   ];
+  useEffect(() => {
+    if (!loading && !isAuth) {
+      router.push("/login");
+      toast.error("Please login first");
+    }
+  }, [isAuth, loading, router]);
 
   const [chatList, setChatList] = useState(chatListData);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -87,7 +98,9 @@ const ChatApp = () => {
                   setSelectedChat(chat);
                   setSidebarOpen(false);
                 }}
-                className={`px-4 py-2 mb-2 cursor-pointer flex border border-gray-600 items-center gap-3 transition ${selectedChat.id === chat.id ? "bg-gray-800 rounded-lg mx-2" : "hover:bg-gray-800 rounded-lg mx-2"}`}
+                className={`px-4 py-2 mb-2 cursor-pointer flex border border-gray-600 items-center gap-3 transition ${
+                  selectedChat.id === chat.id ? "bg-gray-800 rounded-lg mx-2" : "hover:bg-gray-800 rounded-lg mx-2"
+                }`}
               >
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 border flex items-center justify-center font-bold">{chat.name[0]}</div>
                 <div className="flex-1 min-w-0">
@@ -116,7 +129,9 @@ const ChatApp = () => {
               <div key={idx} className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`px-4 py-2 rounded-xl max-w-xs ${
-                    msg.sender === "me" ? "bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-600" : "bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-600"
+                    msg.sender === "me"
+                      ? "bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-600"
+                      : "bg-gradient-to-br from-gray-800 to-gray-900 text-white border border-gray-600"
                   }`}
                 >
                   {msg.text}

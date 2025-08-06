@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, MessageCircle, Settings, LogOut, User, MessageCircleMore } from "lucide-react";
 import LogoutModal from "../components/LogoutModal";
+import { useAppData } from "../context/AppContext";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -13,8 +14,16 @@ const navItems = [
 ];
 
 const Sidebar = () => {
-  const pathname = usePathname();
+  const { isAuth, loading } = useAppData();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !isAuth) {
+      router.push("/login");
+      
+    }
+  }, [isAuth, loading, router]);
+  const pathname = usePathname();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
