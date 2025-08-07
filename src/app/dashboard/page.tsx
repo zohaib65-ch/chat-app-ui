@@ -5,7 +5,6 @@ import { Users, MessageSquare, Clock, Hash, Smile } from "lucide-react";
 import { useEffect } from "react";
 import { useAppData } from "../context/AppContext";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 const recentActivities = [
   { user: "Zohaib", action: "Sent a message", time: "5 mins ago", icon: <MessageSquare className="w-4 h-4 text-white" /> },
   { user: "Sultan", action: "Joined room #42", time: "10 mins ago", icon: <Users className="w-4 h-4 text-white" /> },
@@ -33,7 +32,7 @@ export default function DashboardPage() {
   }, [isAuth, loading, router]);
 
   return (
-    <div className="h-[90vh]  text-white p-6 space-y-12">
+    <div className=" text-white p-6 space-y-12">
       <motion.div className="rounded-3xl mb-10 p-8 bg-gradient-to-r from-gray-800 to-gray-900 backdrop-blur-lg " initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-4xl font-medium tracking-tight flex items-center gap-2">
           Welcome Back, Zohaib

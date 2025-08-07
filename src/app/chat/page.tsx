@@ -2,12 +2,26 @@
 
 import React, { use, useEffect, useState } from "react";
 import { Search, Send, Menu, X } from "lucide-react";
-import { useAppData } from "../context/AppContext";
+import { useAppData, User } from "../context/AppContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+export interface Message {
+  _id: string;
+  chatId: string;
+  sender: string;
+  text: string;
+  image?: {
+    url: string;
+    publicId: string;
+  };
+  messageType: "text" | "image";
+  seenAt?: string;
+  createdAt: string;
+}
 
 const ChatApp = () => {
-  const { isAuth, loading } = useAppData();
+  const { isAuth, loading, logoutUser, chats, user: loggedInUser, users, fetchChat, fetchAllUsers } = useAppData();
+
   const router = useRouter();
   const chatListData = [
     {
@@ -46,6 +60,17 @@ const ChatApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedChat, setSelectedChat] = useState(chatListData[0]);
   const [input, setInput] = useState("");
+
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState("");
+  const [user, setUser] = useState<User | null>(null);
+  const [showAllUser, setShowAllUser] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingTimeOut, setTypingTimeOut] = useState<NodeJS.Timeout | null>(
+    
+  );
+  const [allMessages, setAllMessages] = useState<Message[]>([]);
 
   const sendMessage = () => {
     if (input.trim() === "") return;
